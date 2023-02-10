@@ -1,4 +1,5 @@
-from utils.brain import run
+from utils.brain import Brain
 
 if __name__ == '__main__':
-    run()
+    Brain().run()
+     
