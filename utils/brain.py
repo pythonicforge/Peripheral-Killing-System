@@ -17,7 +17,7 @@ def run():
     except Exception as e:
         print(colored("The 'punkt' and 'wordnet' data package already exists.", "yellow"))
 
-    assistant = GenericAssistant('intents.json', model_name="test_model")
+    assistant = GenericAssistant('intents.json')
     assistant.train_model()
     assistant.save_model()
 
