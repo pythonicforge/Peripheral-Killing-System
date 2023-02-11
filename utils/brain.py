@@ -1,55 +1,63 @@
-import os
-import nltk
-from neuralintents import GenericAssistant
-from termcolor import colored
+import multiprocessing as mp
 
 from utils.speech_synthesizer import Speak, Hear
+from backend.brightness import GesturedBrightness
 
 
 class Brain:
     def __init__(self) -> None:
-        self.speaker = Speak(female=True, english=True)
+        self.speaker = Speak(gender="female", language="english")
 
-    def run(self):
+    def run(self) -> None:
         self.speaker.say("Initializing system!")
-        PATH = f'{os.getcwd()}\data'
 
-        nltk.data.path = [PATH]
-        print(colored(f'PATHS found: {nltk.data.path}', "green"))
-        try:
-            nltk.download('punkt', download_if_missing=True)
-            nltk.download('wordnet', download_if_missing=True)
-        except Exception as e:
-            print(
-                colored("The 'punkt' and 'wordnet' data package already exists.", "yellow"))
-
-        assistant = GenericAssistant('intents.json')
-        assistant.train_model()
-        assistant.save_model()
-
-        object = Hear()
+        audioOBJ = Hear()
         done = False
+
+        is_brightness_turned_on, is_mode_active = False, False
+        brightness_controller = mp.Process(target=GesturedBrightness)
 
         self.speaker.say("System initialization completed!")
         self.speaker.say("System is online and running!")
 
         while not done:
-            response = object.recognize_speech_from_mic()
-            
+            response = audioOBJ.recognize_speech_from_mic()
+
             query = response["transcription"]
             if response["success"]:
-                if(response["transcription"] != None):
+                if (response["transcription"] != None):
                     query = query.lower().strip()
                     print(query)
-                    if query == "exit":
+                    if "exit" in query or "stop" in query:
                         done = True
-                        self.speaker.say("Peripheral Killing System terminated. All systems are offline now!")
+                        self.speaker.say(
+                            "Peripheral Killing System terminated. All systems are offline now!")
+                    elif "brightness" and "on" in query:
+                        if (is_mode_active == False):
+                            if (is_brightness_turned_on == False):
+                                is_brightness_turned_on, is_mode_active = True, True
+                                brightness_controller.start()
+                                self.speaker.say(
+                                    "Brightness control mode turned on")
+                            else:
+                                self.speaker.say(
+                                    "Brightness control mode is already turned on")
+                        else:
+                            self.speaker.say(
+                                "Some other instances of control system are currently running! Please turn them off and try again later!")
+                    elif "brightness" and "off" in query:
+                        if (is_brightness_turned_on == True):
+                            is_brightness_turned_on, is_mode_active = False, False
+                            brightness_controller.terminate()
+                            brightness_controller = mp.Process(
+                                target=GesturedBrightness)
+                            self.speaker.say(
+                                "Brightness control mode turned off")
+                        else:
+                            self.speaker.say(
+                                "No brightness control console is currently turned on. No actions taken!")
+
                     else:
-                        transcript = assistant.request(query)
-                        print(transcript)
-                        self.speaker.say(transcript)
+                        pass
                 elif query == None:
                     pass
-                    
-            else:
-                self.speaker.say("I'm sorry, I had trouble hearing you.")

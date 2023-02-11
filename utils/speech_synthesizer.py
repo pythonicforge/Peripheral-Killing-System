@@ -1,40 +1,42 @@
 import os
+import winsound
 import pygame
 import speech_recognition as sr
-import winsound
 from termcolor import colored
 
 
 class Speak:
-    def __init__(self, voice="en-US-EricNeural", female=False, english=True) -> None:
+    def __init__(self, gender="female", language="english") -> None:
+        """Default Text-to-Speech class.
 
-        self.voice = voice
-        self.gender = female
-        self.language = english
+        Takes 2 optional inputs
+        "gender": defaults to `female`. You can change the gender of the TTS by passing a suitable gender value.
+        "language": defaults to `english`. You can change the language of the TTS by passing a suitable langauge value.
+        """
+        self.gender = gender
+        self.language = language
 
-        language_support = {
-            "Male English": "en-US-EricNeural",
-            "Female English": "en-US-AriaNeural",
-            "Male Hindi": "hi-IN-MadhurNeural",
-            "Female Hindi": "hi-IN-SwaraNeural",
-        }
-
-        if (self.gender == True):
-            if (self.language == False):
-                self.voice = language_support["Female Hindi"]
+        if (self.gender == "female"):
+            if (self.language == "hindi"):
+                self.voice = "hi-IN-SwaraNeural"
             else:
-                self.voice = language_support["Female English"]
+                self.voice = "en-US-AriaNeural"
         else:
-            if (self.language == False):
-                self.voice = language_support["Male Hindi"]
+            if (self.language == "hindi"):
+                self.voice = "hi-IN-MadhurNeural"
             else:
-                self.voice = language_support["Male English"]
+                self.voice = "en-US-EricNeural"
 
     def say(self, text):
+        """Fetches a `.mp3` file of the text passed.
 
-        command = f'edge-tts --voice "{self.voice}" --text "{text}" --write-media "data.mp3"'
+        Takes 1 input
+        "text": The text that is to converted to TTS. Passed as a `string` value.
+        """
 
-        os.system(command)
+        os.system(
+            f'edge-tts --voice "{self.voice}" --text "{text}" --write-media "data.mp3"')
+        print(colored(f"Sara: {text}", color="blue"))
 
         pygame.init()
         pygame.mixer.init()
@@ -42,12 +44,11 @@ class Speak:
 
         try:
             pygame.mixer.music.play()
-
             while pygame.mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
 
         except Exception as e:
-            print(e)
+            print(colored(e, color="red"))
 
         finally:
             pygame.mixer.music.stop()
@@ -69,14 +70,12 @@ class Hear:
         "transcription": `None` if speech coul not be transcribed, otherwise a string containing the transcribed text
         """
 
-        # check that recognizer and microphone are appropriate type
         if not isinstance(self.recognizer, sr.Recognizer):
             raise TypeError("`recognizer` must be a `Recognizer` instance")
 
         if not isinstance(self.microphone, sr.Microphone):
             raise TypeError("`microphone` must be a `Microphone` instance")
 
-        # adjust thge recognizer sensitivity to ambient noise and record audio from microphone
         with self.microphone as source:
             winsound.Beep(600, 300)
             print(colored("Listening for audio input..", color="green"))
