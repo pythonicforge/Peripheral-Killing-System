@@ -1,5 +1,8 @@
-import pygame
 import os
+import pygame
+import speech_recognition as sr
+import winsound
+from termcolor import colored
 
 
 class Speak:
@@ -50,3 +53,51 @@ class Speak:
             pygame.mixer.music.stop()
             pygame.mixer.quit()
             os.remove("data.mp3")
+
+
+class Hear:
+    def __init__(self) -> None:
+        self.recognizer = sr.Recognizer()
+        self.microphone = sr.Microphone()
+
+    def recognize_speech_from_mic(self):
+        """Transcribe speech recorded from 'microphone'.
+
+        Returns a dictionary with three keys:
+        "success": a boolean indicating whether or not the API request was successful
+        "error": `None` if no error occured, otherwise a string containing an error message if the API could not be reached or speech was unrecognizable
+        "transcription": `None` if speech coul not be transcribed, otherwise a string containing the transcribed text
+        """
+
+        # check that recognizer and microphone are appropriate type
+        if not isinstance(self.recognizer, sr.Recognizer):
+            raise TypeError("`recognizer` must be a `Recognizer` instance")
+
+        if not isinstance(self.microphone, sr.Microphone):
+            raise TypeError("`microphone` must be a `Microphone` instance")
+
+        # adjust thge recognizer sensitivity to ambient noise and record audio from microphone
+        with self.microphone as source:
+            winsound.Beep(600, 300)
+            print(colored("Listening for audio input..", color="green"))
+            self.recognizer.pause_threshold = 1
+            self.recognizer.energy_threshold = 150
+            audio = self.recognizer.listen(source, phrase_time_limit=4)
+
+        response = {
+            "success": True,
+            "error": None,
+            "transcription": None
+        }
+
+        try:
+            print(colored("Attempting to recognize audio transcript..", color="green"))
+            response["transcription"] = self.recognizer.recognize_google(audio)
+            winsound.Beep(400, 150)
+        except sr.RequestError:
+            response["success"] = False
+            response["error"] = "API unavailable or is currently unreachable"
+        except sr.UnknownValueError:
+            response["error"] = "Unable to recognize speech from audio"
+
+        return response

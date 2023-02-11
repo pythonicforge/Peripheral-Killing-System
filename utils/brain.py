@@ -3,7 +3,7 @@ import nltk
 from neuralintents import GenericAssistant
 from termcolor import colored
 
-from utils.speech_synthesizer import Speak
+from utils.speech_synthesizer import Speak, Hear
 
 
 class Brain:
@@ -20,21 +20,36 @@ class Brain:
             nltk.download('punkt', download_if_missing=True)
             nltk.download('wordnet', download_if_missing=True)
         except Exception as e:
-            print(colored("The 'punkt' and 'wordnet' data package already exists.", "yellow"))
+            print(
+                colored("The 'punkt' and 'wordnet' data package already exists.", "yellow"))
 
         assistant = GenericAssistant('intents.json')
         assistant.train_model()
         assistant.save_model()
 
+        object = Hear()
         done = False
+
         self.speaker.say("System initialization completed!")
-        self.speaker.say("System is up and running!")
+        self.speaker.say("System is online and running!")
 
         while not done:
-            message = input("Enter a message: ")
-            if message == "exit":
-                done = True
+            response = object.recognize_speech_from_mic()
+            
+            query = response["transcription"]
+            if response["success"]:
+                if(response["transcription"] != None):
+                    query = query.lower().strip()
+                    print(query)
+                    if query == "exit":
+                        done = True
+                        self.speaker.say("Peripheral Killing System terminated. All systems are offline now!")
+                    else:
+                        transcript = assistant.request(query)
+                        print(transcript)
+                        self.speaker.say(transcript)
+                elif query == None:
+                    pass
+                    
             else:
-                transcript = assistant.request(message)
-                print(transcript)
-                self.speaker.say(transcript)
+                self.speaker.say("I'm sorry, I had trouble hearing you.")
