@@ -17,7 +17,7 @@ class Brain:
         audioOBJ = Hear()
         done = False
 
-        is_brightness_turned_on, is_mode_active = False, False
+        is_brightness_turned_on, is_mode_active, is_volume_turned_on = False, False, False
         brightness_controller, volume_controller = mp.Process(
             target=GesturedBrightness), mp.Process(target=GesturedVolume)
 
@@ -38,7 +38,7 @@ class Brain:
                         self.speaker.say(
                             "Peripheral Killing System terminated. All systems are offline now!")
 
-                    elif "brightness" and "on" in query:
+                    elif "turn on brightness mode" in query or "turn on brightness control mode" in query:
                         if (is_mode_active == False):
                             if (is_brightness_turned_on == False):
                                 is_brightness_turned_on, is_mode_active = True, True
@@ -52,7 +52,7 @@ class Brain:
                             self.speaker.say(
                                 "Some other instances of control system are currently running! Please turn them off and try again later!")
 
-                    elif "brightness" and "off" in query:
+                    elif "turn off brightness mode" in query or "turn off brightness control mode" in query:
                         if (is_brightness_turned_on == True):
                             is_brightness_turned_on, is_mode_active = False, False
                             brightness_controller.terminate()
@@ -64,7 +64,7 @@ class Brain:
                             self.speaker.say(
                                 "No brightness control console is currently turned on. No actions taken!")
                                 
-                    elif "volume" and "on" in query:
+                    elif "turn on volume mode" in query or "turn on volume control mode" in query:
                         if (is_mode_active == False):
                             if (is_volume_turned_on == False):
                                 is_volume_turned_on, is_mode_active = True, True
@@ -78,7 +78,7 @@ class Brain:
                             self.speak_audio(
                                 "Some other instances of control system are currently running! Please turn them off and try later!")
 
-                    elif "volume" and "off" in query:
+                    elif "turn off volume mode" in query or "turn off volume control mode" in query:
                         if (is_volume_turned_on == True):
                             is_volume_turned_on, is_mode_active = False, False
                             volume_controller.terminate()
