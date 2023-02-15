@@ -39,6 +39,7 @@ class Brain:
                         done = True
                         self.speaker.say("data/kill.mp3",
                                          "Peripheral Killing System terminated. All systems are offline now!")
+                        break
 
                     elif "turn on brightness mode" in query or "turn on brightness control mode" in query:
                         if (is_mode_active == False):
