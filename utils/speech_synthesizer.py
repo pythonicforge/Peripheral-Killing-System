@@ -1,4 +1,3 @@
-import os
 import winsound
 import pygame
 import speech_recognition as sr
@@ -6,41 +5,22 @@ from termcolor import colored
 
 
 class Speak:
-    def __init__(self, gender="female", language="english") -> None:
-        """Default Text-to-Speech class.
+    def __init__(self) -> None:
+        pass
 
-        Takes 2 optional inputs
-        "gender": defaults to `female`. You can change the gender of the TTS by passing a suitable gender value.
-        "language": defaults to `english`. You can change the language of the TTS by passing a suitable langauge value.
-        """
-        self.gender = gender
-        self.language = language
-
-        if (self.gender == "female"):
-            if (self.language == "hindi"):
-                self.voice = "hi-IN-SwaraNeural"
-            else:
-                self.voice = "en-US-AriaNeural"
-        else:
-            if (self.language == "hindi"):
-                self.voice = "hi-IN-MadhurNeural"
-            else:
-                self.voice = "en-US-EricNeural"
-
-    def say(self, text):
-        """Fetches a `.mp3` file of the text passed.
+    def say(self, file_to_audio, text):
+        """Plays a `.mp3` file of the file location passed.
 
         Takes 1 input
-        "text": The text that is to converted to TTS. Passed as a `string` value.
+        "file_to_path": The path to the audio file to play.
+        "text": The content of the auio file that needs to be printed.
         """
 
-        os.system(
-            f'edge-tts --voice "{self.voice}" --text "{text}" --write-media "data.mp3"')
         print(colored(f"Sara: {text}", color="blue"))
 
         pygame.init()
         pygame.mixer.init()
-        pygame.mixer.music.load("data.mp3")
+        pygame.mixer.music.load(file_to_audio)
 
         try:
             pygame.mixer.music.play()
@@ -53,7 +33,6 @@ class Speak:
         finally:
             pygame.mixer.music.stop()
             pygame.mixer.quit()
-            os.remove("data.mp3")
 
 
 class Hear:

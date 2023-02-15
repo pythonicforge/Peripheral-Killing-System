@@ -9,10 +9,10 @@ from backend.volume import GesturedVolume
 
 class Brain:
     def __init__(self) -> None:
-        self.speaker = Speak(gender="female", language="english")
+        self.speaker = Speak()
 
     def run(self) -> None:
-        self.speaker.say("Initializing system!")
+        self.speaker.say("data/initialisation1.mp3", "Initializing system!")
 
         audioOBJ = Hear()
         done = False
@@ -21,8 +21,10 @@ class Brain:
         brightness_controller, volume_controller = mp.Process(
             target=GesturedBrightness), mp.Process(target=GesturedVolume)
 
-        self.speaker.say("System initialization completed!")
-        self.speaker.say("System is online and running!")
+        self.speaker.say("data/initialisation2.mp3",
+                         "System initialization completed!")
+        self.speaker.say("data/initialisation3.mp3",
+                         "System is online and running!")
 
         while not done:
             response = audioOBJ.recognize_speech_from_mic()
@@ -35,22 +37,22 @@ class Brain:
 
                     if "exit" in query or "stop" in query:
                         done = True
-                        self.speaker.say(
-                            "Peripheral Killing System terminated. All systems are offline now!")
+                        self.speaker.say("data/kill.mp3",
+                                         "Peripheral Killing System terminated. All systems are offline now!")
 
                     elif "turn on brightness mode" in query or "turn on brightness control mode" in query:
                         if (is_mode_active == False):
                             if (is_brightness_turned_on == False):
                                 is_brightness_turned_on, is_mode_active = True, True
                                 brightness_controller.start()
-                                self.speaker.say(
-                                    "Brightness control mode turned on")
+                                self.speaker.say("data/brightness_on.mp3",
+                                                 "Brightness control mode turned on")
                             else:
-                                self.speaker.say(
-                                    "Brightness control mode is already turned on")
+                                self.speaker.say("data/brightness_already_on.mp3",
+                                                 "Brightness control mode is already turned on")
                         else:
-                            self.speaker.say(
-                                "Some other instances of control system are currently running! Please turn them off and try again later!")
+                            self.speaker.say("data/other_system_on.mp3",
+                                             "Some other instances of control system are currently running! Please turn them off and try again later!")
 
                     elif "turn off brightness mode" in query or "turn off brightness control mode" in query:
                         if (is_brightness_turned_on == True):
@@ -58,25 +60,25 @@ class Brain:
                             brightness_controller.terminate()
                             brightness_controller = mp.Process(
                                 target=GesturedBrightness)
-                            self.speaker.say(
-                                "Brightness control mode turned off")
+                            self.speaker.say("data/brightness_off.mp3",
+                                             "Brightness control mode turned off")
                         else:
-                            self.speaker.say(
-                                "No brightness control console is currently turned on. No actions taken!")
-                                
+                            self.speaker.say("data/no_brightness.mp3",
+                                             "No brightness control console is currently turned on. No actions taken!")
+
                     elif "turn on volume mode" in query or "turn on volume control mode" in query:
                         if (is_mode_active == False):
                             if (is_volume_turned_on == False):
                                 is_volume_turned_on, is_mode_active = True, True
                                 volume_controller.start()
-                                self.speaker.say(
-                                    "Volume control mode turned on")
+                                self.speaker.say("data/volume_on.mp3",
+                                                 "Volume control mode turned on")
                             else:
-                                self.speaker.say(
-                                    "Already switched to volume control mode")
+                                self.speaker.say("data/volume_already_on.mp3",
+                                                 "Already switched to volume control mode")
                         else:
-                            self.speak_audio(
-                                "Some other instances of control system are currently running! Please turn them off and try later!")
+                            self.speaker.say("data/other_system_on.mp3",
+                                             "Some other instances of control system are currently running! Please turn them off and try later!")
 
                     elif "turn off volume mode" in query or "turn off volume control mode" in query:
                         if (is_volume_turned_on == True):
@@ -84,10 +86,11 @@ class Brain:
                             volume_controller.terminate()
                             volume_controller = mp.Process(
                                 target=GesturedVolume)
-                            self.speaker.say("Turned off volume control mode")
-                        else:
                             self.speaker.say(
-                                "No volume control console is currently turned on. No actions taken")
+                                "data/volume_off.mp3", "Turned off volume control mode")
+                        else:
+                            self.speaker.say("data/no_volume.mp3",
+                                             "No volume control console is currently turned on. No actions taken")
 
                     else:
                         pass
