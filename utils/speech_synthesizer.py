@@ -16,7 +16,7 @@ class Speak:
         "text": The content of the auio file that needs to be printed.
         """
 
-        print(colored(f"Sara: {text}", color="blue"))
+        print(colored(f"Computer: {text}", color="blue"))
 
         pygame.init()
         pygame.mixer.init()
