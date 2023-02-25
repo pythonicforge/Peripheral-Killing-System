@@ -13,7 +13,7 @@ class Speak:
 
         Takes 1 input
         "file_to_path": The path to the audio file to play.
-        "text": The content of the auio file that needs to be printed.
+        "text": The content of the audio file that needs to be printed.
         """
 
         print(colored(f"Computer: {text}", color="blue"))

@@ -8,7 +8,7 @@ import pvporcupine
 from termcolor import colored
 
 from utils.speech_synthesizer import Speak, Hear
-import backend
+from backend import *
 
 
 class Brain:
@@ -23,7 +23,7 @@ class Brain:
 
         is_brightness_turned_on, is_mode_active, is_volume_turned_on = False, False, False
         brightness_controller, volume_controller = mp.Process(
-            target=backend.GesturedBrightness), mp.Process(target=backend.GesturedVolume)
+            target=GesturedBrightness), mp.Process(target=GesturedVolume)
 
         self.speaker.say("data/initialisation2.mp3",
                          "System initialization completed!")
@@ -37,7 +37,7 @@ class Brain:
         audio_stream = None
 
         try:
-            porcupine = pvporcupine.create(keywords=["computer", "jarvis"])
+            porcupine = pvporcupine.create(keywords=["computer"])
             p_audio = pyaudio.PyAudio()
             audio_stream = p_audio.open(
                 rate=porcupine.sample_rate,
@@ -48,7 +48,6 @@ class Brain:
             )
 
             while True:
-
                 pcm = audio_stream.read(porcupine.frame_length)
                 pcm = struct.unpack_from("h" * porcupine.frame_length, pcm)
 
@@ -112,7 +111,7 @@ class Brain:
                                         is_brightness_turned_on, is_mode_active = False, False
                                         brightness_controller.terminate()
                                         brightness_controller = mp.Process(
-                                            target=backend.GesturedBrightness)
+                                            target=GesturedBrightness)
                                         self.speaker.say("data/brightness_off.mp3",
                                                          "Brightness control mode turned off")
                                     else:
@@ -138,7 +137,7 @@ class Brain:
                                         is_volume_turned_on, is_mode_active = False, False
                                         volume_controller.terminate()
                                         volume_controller = mp.Process(
-                                            target=backend.GesturedVolume)
+                                            target=GesturedVolume)
                                         self.speaker.say(
                                             "data/volume_off.mp3", "Turned off volume control mode")
                                     else:
