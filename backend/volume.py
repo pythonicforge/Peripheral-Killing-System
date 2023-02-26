@@ -11,6 +11,9 @@ from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 class GesturedVolume:
     def __init__(self):
+        """
+        Initializes the GesturedVolume object, which creates the GUI window and initializes the necessary objects and variables for volume control. The method starts the main event loop for the GUI window.
+        """
 
         self.window = tk.Tk()
         self.window.title("Volume Control Console")
@@ -35,6 +38,9 @@ class GesturedVolume:
         self.window.mainloop()
 
     def update(self):
+        """
+        Updates the GUI window by reading a frame from the video capture device, detecting the user's hand and fingers using a HandDetector object, and adjusting the system volume based on the position of the user's fingers. The method then displays the current system volume and hand detection results on the video frame, and updates the GUI window with the new video frame. This method is called repeatedly by the mainloop() of the GUI window.
+        """
 
         ret, frame = self.cap.read()
 
