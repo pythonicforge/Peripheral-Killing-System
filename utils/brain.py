@@ -16,6 +16,18 @@ class Brain:
         self.speaker = Speak()
 
     def run(self) -> None:
+        """
+        The run method initializes the system and listens to voice commands from the user. It uses Porcupine to detect the wake word "computer" and then listens for voice commands from the user.
+
+        The method creates two processes, brightness_controller and volume_controller, which are used to control the brightness and volume of the computer respectively. These processes are started or terminated depending on the user's commands.
+
+        The method also uses the Hear class to recognize speech from the user. The recognized speech is then processed by the system to perform various actions, such as turning on/off the brightness or volume control mode, putting the system to sleep, or exiting the program.
+
+        The method loops until the user exits the program or puts the system to sleep.
+
+        Parameters: None
+        Returns: None
+        """
         self.speaker.say("data/initialisation1.mp3", "Initializing system!")
 
         audioOBJ = Hear()

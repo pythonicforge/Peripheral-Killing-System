@@ -10,6 +10,15 @@ import screen_brightness_control as sbc
 
 class GesturedBrightness:
     def __init__(self):
+        """
+        The GesturedBrightness class initializes a graphical user interface window that displays the camera feed and allows the user to control the brightness of their screen using hand gestures.
+
+        The class uses OpenCV to capture the video feed from the camera, and the cvzone.HandTrackingModule to detect the user's hand and fingers in the frame. The user can adjust the brightness by moving their index and middle fingers closer or further apart, and the current brightness percentage is displayed on the screen.
+
+        The screen_brightness_control module is used to set the brightness level of the screen based on the user's hand gesture. The canvas is used to display the video feed from the camera and updated in real-time using the update() method, which is called repeatedly after a specified delay.
+
+        The class has no constructor arguments and the graphical user interface is started automatically when an instance of the class is created.
+        """
         self.window = tk.Tk()
         self.window.title("Brightness Control Console")
 
