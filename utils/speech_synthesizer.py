@@ -9,8 +9,6 @@ class Speak:
         """
         Initializes an instance of the Speak class.
         """
-        pygame.init()
-        pygame.mixer.init()
 
     def say(self, file_to_audio, text):
         """
@@ -34,6 +32,8 @@ class Speak:
 
         print(colored(f"Computer: {text}", color="blue"))
 
+        pygame.init()
+        pygame.mixer.init()
         pygame.mixer.music.load(file_to_audio)
 
         try:

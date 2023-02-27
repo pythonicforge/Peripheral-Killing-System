@@ -28,7 +28,7 @@ class Brain:
         Parameters: None
         Returns: None
         """
-        self.speaker.say("data/initialisation1.mp3", "Initializing system!")
+        self.speaker.say("data/init/1.mp3", "Initializing system!")
 
         audioOBJ = Hear()
         done = False
@@ -37,12 +37,12 @@ class Brain:
         brightness_controller, volume_controller = mp.Process(
             target=GesturedBrightness), mp.Process(target=GesturedVolume)
 
-        self.speaker.say("data/initialisation2.mp3",
+        self.speaker.say("data/init/2.mp3",
                          "System initialization completed!")
-        self.speaker.say("data/initialisation3.mp3",
+        self.speaker.say("data/init/3.mp3",
                          "System is online and running!")
         time.sleep(1.5)
-        self.speaker.say("data/sleep2.mp3", "Awaiting your call!")
+        self.speaker.say("data/awaitCall.mp3", "Awaiting your call!")
 
         porcupine = None
         p_audio = None
@@ -67,7 +67,7 @@ class Brain:
 
                 if (keyword_index >= 0):
 
-                    self.speaker.say("data/sleep3.mp3",
+                    self.speaker.say("data/wake_system_up.mp3",
                                      "Hey! How can I help you?")
                     while not done:
                         response = audioOBJ.recognize_speech_from_mic()
@@ -88,7 +88,7 @@ class Brain:
                                         is_volume_turned_on, is_mode_active = False, False
                                         volume_controller.terminate()
 
-                                    self.speaker.say("data/kill.mp3",
+                                    self.speaker.say("data/killSystem.mp3",
                                                      "Peripheral Killing System terminated. All systems are offline now!")
                                     sys.exit()
 
@@ -101,7 +101,7 @@ class Brain:
                                         is_volume_turned_on, is_mode_active = False, False
                                         volume_controller.terminate()
                                     self.speaker.say(
-                                        "data/sleep1.mp3", "Hibernating now! Call me when you need me!")
+                                        "data/hibernating_system.mp3", "Hibernating now! Call me when you need me!")
                                     break
 
                                 elif "turn on brightness mode" in query or "turn on brightness control mode" in query:
@@ -109,10 +109,10 @@ class Brain:
                                         if (is_brightness_turned_on == False):
                                             is_brightness_turned_on, is_mode_active = True, True
                                             brightness_controller.start()
-                                            self.speaker.say("data/brightness_on.mp3",
+                                            self.speaker.say("data/brightness/brightness_on.mp3",
                                                              "Brightness control mode turned on")
                                         else:
-                                            self.speaker.say("data/brightness_already_on.mp3",
+                                            self.speaker.say("data/brightness/brightness_already_on.mp3",
                                                              "Brightness control mode is already turned on")
                                     else:
                                         self.speaker.say("data/other_system_on.mp3",
@@ -124,10 +124,10 @@ class Brain:
                                         brightness_controller.terminate()
                                         brightness_controller = mp.Process(
                                             target=GesturedBrightness)
-                                        self.speaker.say("data/brightness_off.mp3",
+                                        self.speaker.say("data/brightness/brightness_off.mp3",
                                                          "Brightness control mode turned off")
                                     else:
-                                        self.speaker.say("data/no_brightness.mp3",
+                                        self.speaker.say("data/brightness/no_brightness.mp3",
                                                          "No brightness control console is currently turned on. No actions taken!")
 
                                 elif "turn on volume mode" in query or "turn on volume control mode" in query:
@@ -135,10 +135,10 @@ class Brain:
                                         if (is_volume_turned_on == False):
                                             is_volume_turned_on, is_mode_active = True, True
                                             volume_controller.start()
-                                            self.speaker.say("data/volume_on.mp3",
+                                            self.speaker.say("data/volume/volume_on.mp3",
                                                              "Volume control mode turned on")
                                         else:
-                                            self.speaker.say("data/volume_already_on.mp3",
+                                            self.speaker.say("data/volume/volume_already_on.mp3",
                                                              "Already switched to volume control mode")
                                     else:
                                         self.speaker.say("data/other_system_on.mp3",
@@ -151,9 +151,9 @@ class Brain:
                                         volume_controller = mp.Process(
                                             target=GesturedVolume)
                                         self.speaker.say(
-                                            "data/volume_off.mp3", "Turned off volume control mode")
+                                            "data/volume/volume_off.mp3", "Turned off volume control mode")
                                     else:
-                                        self.speaker.say("data/no_volume.mp3",
+                                        self.speaker.say("data/volume/no_volume.mp3",
                                                          "No volume control console is currently turned on. No actions taken")
 
                                 else:
@@ -161,7 +161,7 @@ class Brain:
                             elif query == None:
                                 pass
                     time.sleep(1.5)
-                    self.speaker.say("data/sleep2.mp3", "Awaiting your call!")
+                    self.speaker.say("data/awaitCall.mp3", "Awaiting your call!")
 
         finally:
             if porcupine is not None:
