@@ -60,3 +60,7 @@ class GesturedBrightness:
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
         self.window.after(self.delay, self.update)
+
+
+if __name__ == "__main__":
+    GesturedBrightness()
