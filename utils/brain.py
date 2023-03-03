@@ -94,7 +94,7 @@ class Brain:
                                     print(
                                         colored(f"User: {query}", color="blue"))
 
-                                    if "exit" in query or "stop" or "shut down" in query:
+                                    if "exit" in query or "stop"  in query:
                                         done = True
                                         if (is_brightness_turned_on == True):
                                             is_brightness_turned_on, is_mode_active = False, False

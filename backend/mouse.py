@@ -34,11 +34,6 @@ class AirMouse:
 
         self.window.mainloop()
 
-    def euclidean_distance(self, pt1, pt2):
-        distance = np.sqrt((pt2[0] - pt1[0])**2 + (pt2[1] - pt1[1])**2)
-
-        return distance
-
     def update(self):
         ret, frame = self.cap.read()
         frame = cv2.flip(frame, 1)
