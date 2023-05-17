@@ -50,7 +50,7 @@ class AirMouse:
 
             if (fingers[1] == 1 and fingers[2] == 0):
 
-                handLms = hands[0]["indexCoords"]
+                handLms = hands[0]["lmList"][8]
 
                 if handLms is not None:
                     cv2.circle(frame, (handLms[0], handLms[1]),
