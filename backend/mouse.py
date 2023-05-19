@@ -1,30 +1,41 @@
 import tkinter as tk
 import cv2
-from cvzone.HandTrackingModule import HandDetector
-import numpy as np
+import numpy
 from PIL import ImageTk, Image
-import pyautogui
+import mediapipe
+import autopy
 
 
 class AirMouse:
     def __init__(self):
-        pyautogui.FAILSAFE = False
+        """Initializes the AirMouse class.
+
+        This constructor sets up the GUI window, video capture, hand tracking module, and other necessary variables.
+        """
 
         self.window = tk.Tk()
-        self.screen = (self.window.winfo_screenwidth(),
-                       self.window.winfo_screenheight())
+        self.screen = (
+            self.window.winfo_screenwidth(),
+            self.window.winfo_screenheight(),
+        )
 
         self.window.title("Mouse Control Console")
         self.window.geometry("640x480")
         self.window.resizable(False, False)
 
-        self.left, self.top, self.right, self.bottom = (90, 90, 550, 390)
-        self.smoothening = 10
-        self.previous_x, self.previous_y = 0, 0
-        self.x_buffer, self.y_buffer = [0]*self.smoothening, [0]*self.smoothening
-
         self.cap = cv2.VideoCapture(0)
-        self.detector = HandDetector(detectionCon=0.5, maxHands=1)
+
+        self.initHand = mediapipe.solutions.hands
+        self.mainHand = self.initHand.Hands(
+            min_detection_confidence=0.8, min_tracking_confidence=0.8
+        )
+        self.draw = mediapipe.solutions.drawing_utils
+        (
+            self.wScr,
+            self.hScr,
+        ) = autopy.screen.size()
+        self.pX, self.pY = 0, 0
+        self.cX, self.cY = 0, 0
 
         self.canvas = tk.Canvas(self.window, width=640, height=480)
         self.canvas.pack()
@@ -34,57 +45,91 @@ class AirMouse:
 
         self.window.mainloop()
 
+    def handLandmarks(self, colorImg, img):
+        """Detects and tracks hand landmarks in the given color image.
+
+        Args:
+            colorImg (numpy.ndarray): The input color image.
+            img (numpy.ndarray): The image on which to draw the hand landmarks.
+
+        Returns:
+            list: A list of landmark positions, each represented as [index, centerX, centerY].
+        """
+        landmarkList = []
+
+        landmarkPositions = self.mainHand.process(colorImg)
+        landmarkCheck = landmarkPositions.multi_hand_landmarks
+        if landmarkCheck:
+            for hand in landmarkCheck:
+                for index, landmark in enumerate(hand.landmark):
+                    self.draw.draw_landmarks(img, hand, self.initHand.HAND_CONNECTIONS)
+                    h, w, c = img.shape
+                    centerX, centerY = int(landmark.x * w), int(landmark.y * h)
+                    landmarkList.append([index, centerX, centerY])
+
+        return landmarkList
+
+    def fingers(self, landmarks, lmList):
+        """Determines the state of the fingers based on the landmark positions.
+
+        Args:
+            landmarks (list): A list of landmark positions, each represented as [index, centerX, centerY].
+            lmList (list): The complete list of hand landmarks.
+
+        Returns:
+            list: A list of binary values indicating the state of each finger.
+        """
+        fingerTips = []
+        tipIds = [4, 8, 12, 16, 20]
+
+        if landmarks[tipIds[0]][1] > lmList[tipIds[0] - 1][1]:
+            fingerTips.append(1)
+        else:
+            fingerTips.append(0)
+
+        for id in range(1, 5):
+            if landmarks[tipIds[id]][2] < landmarks[tipIds[id] - 3][2]:
+                fingerTips.append(1)
+            else:
+                fingerTips.append(0)
+
+        return fingerTips
+
     def update(self):
-        ret, frame = self.cap.read()
-        frame = cv2.flip(frame, 1)
+        """Updates the air mouse control.
 
-        cv2.rectangle(frame, (self.left, self.top),
-                      (self.right, self.bottom), (0, 0, 255), 2)
+        This method is called periodically to capture video frames, process hand landmarks, and control the mouse cursor
+        based on finger states.
+        """
+        check, img = self.cap.read()
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        lmList = self.handLandmarks(imgRGB, img)
 
-        hands, frame = self.detector.findHands(
-            frame, draw=True, flipType=False)
+        if len(lmList) != 0:
+            x1, y1 = lmList[8][1:]
+            x2, y2 = lmList[12][1:]
+            finger = self.fingers(lmList, lmList)
 
-        if hands is not None and len(hands) > 0:
+            if finger[1] == 1 and finger[2] == 0:
+                x3 = numpy.interp(x1, (75, 640 - 75), (0, self.wScr))
+                y3 = numpy.interp(y1, (75, 480 - 75), (0, self.hScr))
 
-            fingers = self.detector.fingersUp(hands[0])
+                self.cX = self.pX + (x3 - self.pX) / 7
+                self.cY = self.pY + (y3 - self.pY) / 7
 
-            if (fingers[1] == 1 and fingers[2] == 0):
+                autopy.mouse.move(self.wScr - self.cX, self.cY)
+                self.pX, self.pY = (
+                    self.cX,
+                    self.cY,
+                )
 
-                handLms = hands[0]["lmList"][8]
+            if finger[1] == 0 and finger[0] == 1:
+                autopy.mouse.click()
 
-                if handLms is not None:
-                    cv2.circle(frame, (handLms[0], handLms[1]),
-                               15, (0, 0, 255), cv2.FILLED)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGBA)
 
-                    index_X = np.interp(
-                        handLms[0], (90, 640-90), (0, self.screen[0]))
-                    index_Y = np.interp(
-                        handLms[1], (90, 480-90), (0, self.screen[1]))
-                    
-                    self.x_buffer.pop(0)
-                    self.x_buffer.append(index_X)
-                    self.y_buffer.pop(0)
-                    self.y_buffer.append(index_Y)
-
-                    index_X = sum(self.x_buffer) / self.smoothening
-                    index_Y = sum(self.y_buffer) / self.smoothening
-
-                    pyautogui.moveTo(index_X, index_Y)
-                    self.previous_x, self.previous_y = index_X, index_Y
-
-            if (fingers[1] == 1 and fingers[2] == 1):
-                length, _info, img = self.detector.findDistance(
-                    hands[0]["lmList"][8], hands[0]["lmList"][12], frame)
-                if (length < 40):
-                    cv2.circle(frame, (_info[4], _info[5]),
-                               15, (0, 255, 0), cv2.FILLED)
-                    
-                    pyautogui.click()
-
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-
-        if ret:
-            self.photo = ImageTk.PhotoImage(image=Image.fromarray(frame))
+        if check:
+            self.photo = ImageTk.PhotoImage(image=Image.fromarray(img))
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
         self.window.after(self.delay, self.update)

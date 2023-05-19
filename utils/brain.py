@@ -202,7 +202,7 @@ class Brain:
                                         pass
                                 elif query == None:
                                     pass
-                        time.sleep(1.5)
+                        time.sleep(0.5)
                         self.speaker.say("data/awaitCall.mp3",
                                          "Awaiting your call!")
 
