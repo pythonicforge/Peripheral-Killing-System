@@ -27,7 +27,7 @@ class AirMouse:
 
         self.initHand = mediapipe.solutions.hands
         self.mainHand = self.initHand.Hands(
-            min_detection_confidence=0.8, min_tracking_confidence=0.8
+            min_detection_confidence=0.6, min_tracking_confidence=0.6
         )
         self.draw = mediapipe.solutions.drawing_utils
         (
@@ -102,6 +102,7 @@ class AirMouse:
         based on finger states.
         """
         check, img = self.cap.read()
+        img = cv2.flip(img, 1)
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         lmList = self.handLandmarks(imgRGB, img)
 

@@ -48,9 +48,9 @@ class Brain:
             audioOBJ = Hear()
             done = False
 
-            is_brightness_turned_on, is_mode_active, is_volume_turned_on, is_mouse_turned_on = False, False, False, False
-            brightness_controller, volume_controller, mouse_controller = mp.Process(
-                target=GesturedBrightness), mp.Process(target=GesturedVolume), mp.Process(target=AirMouse)
+            is_brightness_turned_on, is_mode_active, is_volume_turned_on, is_mouse_turned_on, is_keyboard_turned_on = False, False, False, False, False
+            brightness_controller, volume_controller, mouse_controller, keyboard_controller = mp.Process(
+                target=GesturedBrightness), mp.Process(target=GesturedVolume), mp.Process(target=AirMouse), mp.Process(target=AirKeyboard)
 
             self.speaker.say("data/init/2.mp3",
                              "System initialization completed!")
@@ -197,7 +197,31 @@ class Brain:
                                         else:
                                             self.speaker.say("data/mouse/no_mouse.mp3",
                                                              "No mouse control console is currently turned on. No actions taken!")
+                                    elif "turn on keyboard mode" in query or "turn on keyboard control mode" in query:
+                                        if (is_mode_active == False):
+                                            if (is_keyboard_turned_on == False):
+                                                is_keyboard_turned_on, is_mode_active = True, True
+                                                keyboard_controller.start()
+                                                self.speaker.say("data/keyboard/keyboard_on.mp3",
+                                                                 "Keyboard control mode turned on")
+                                            else:
+                                                self.speaker.say("data/keyboard/keyboard_already_on.mp3",
+                                                                 "Keyboard control mode is already turned on")
+                                        else:
+                                            self.speaker.say("data/other_system_on.mp3",
+                                                             "Some other instances of control system are currently running! Please turn them off and try again later!")
 
+                                    elif "turn off keyboard mode" in query or "turn off keyboard control mode" in query:
+                                        if (is_keyboard_turned_on == True):
+                                            is_keyboard_turned_on, is_mode_active = False, False
+                                            keyboard_controller.terminate()
+                                            keyboard_controller = mp.Process(
+                                                target=AirMouse)
+                                            self.speaker.say("data/keyboard/keyboard_off.mp3",
+                                                             "Keyboard control mode turned off")
+                                        else:
+                                            self.speaker.say("data/keyboard/no_keyboard.mp3",
+                                                             "No keyboard control console is currently turned on. No actions taken!")
                                     else:
                                         pass
                                 elif query == None:
