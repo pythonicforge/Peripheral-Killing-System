@@ -174,6 +174,3 @@ class Button:
         self.position = position
         self.text = text
         self.size = size
-
-
-AirKeyboard()
