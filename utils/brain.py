@@ -11,7 +11,6 @@ from termcolor import colored
 from utils.speech_synthesizer import Speak, Hear
 from backend import *
 
-
 class Brain:
     def __init__(self) -> None:
         self.speaker = Speak()
