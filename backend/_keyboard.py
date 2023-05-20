@@ -1,8 +1,8 @@
+import time
 import tkinter as tk
 import cv2
-from PIL import ImageTk, Image
 from cvzone.HandTrackingModule import HandDetector
-import time
+from PIL import ImageTk, Image
 from pynput.keyboard import Controller, Key
 
 
@@ -30,12 +30,11 @@ class AirKeyboard:
         self.detector = HandDetector(detectionCon=0.7, maxHands=1)
 
         self.keys = [
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
             ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";"],
             ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"],
         ]
-
-        self.finaltext = ""
         self.keyboard = Controller()
 
         self.buttonList = []
@@ -44,9 +43,9 @@ class AirKeyboard:
             for x, key in enumerate(self.keys[i]):
                 self.buttonList.append(Button([100 * x + 50, 100 * i + 50], key))
 
-        self.buttonList.append(Button((50, 350), " ", [580, 90]))
+        self.buttonList.append(Button((50, 450), "Spacebar", [580, 90]))
 
-        self.buttonList.append(Button((650, 350), "BackSpace", [400, 90]))
+        self.buttonList.append(Button((650, 450), "Backspace", [400, 90]))
 
         self.canvas = tk.Canvas(self.window, width=1280, height=720)
         self.canvas.pack()
@@ -84,26 +83,26 @@ class AirKeyboard:
                             img,
                             button.position,
                             (x + w, y + h),
-                            (175, 0, 175),
+                            (86, 0, 139),
                             cv2.FILLED,
                         )
                         cv2.putText(
                             img,
                             button.text,
                             (button.position[0] + 20, button.position[1] + 65),
-                            cv2.FONT_HERSHEY_PLAIN,
-                            4,
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            2,
                             (255, 255, 255),
-                            4,
+                            2,
                         )
                         length, _, _ = self.detector.findDistance(
                             hands[0]["lmList"][8], hands[0]["lmList"][12], img
                         )
                         if length < 35:
-                            if button.text == "BackSpace":
+                            if button.text == "Backspace":
                                 self.keyboard.press(Key.backspace)
                                 self.keyboard.release(Key.backspace)
-                            elif button.text == " ":
+                            elif button.text == "Spacebar":
                                 self.keyboard.press(Key.space)
                                 self.keyboard.release(Key.space)
                             else:
@@ -119,10 +118,10 @@ class AirKeyboard:
                                 img,
                                 button.text,
                                 (button.position[0] + 20, button.position[1] + 65),
-                                cv2.FONT_HERSHEY_PLAIN,
-                                4,
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                2,
                                 (255, 255, 255),
-                                4,
+                                2,
                             )
                             time.sleep(0.2)
 
@@ -148,16 +147,16 @@ class AirKeyboard:
             x, y = button.position
             w, h = button.size
             cv2.rectangle(
-                img, button.position, (x + w, y + h), (255, 0, 255), cv2.FILLED
+                img, button.position, (x + w, y + h), (159, 1, 255), cv2.FILLED
             )
             cv2.putText(
                 img,
                 button.text,
                 (button.position[0] + 20, button.position[1] + 65),
-                cv2.FONT_HERSHEY_PLAIN,
-                4,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                2,
                 (255, 255, 255),
-                4,
+                2,
             )
         return img
 
@@ -175,3 +174,6 @@ class Button:
         self.position = position
         self.text = text
         self.size = size
+
+
+AirKeyboard()

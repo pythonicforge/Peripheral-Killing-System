@@ -1,9 +1,9 @@
 import tkinter as tk
+import autopy
 import cv2
+import mediapipe
 import numpy
 from PIL import ImageTk, Image
-import mediapipe
-import autopy
 
 
 class AirMouse:
