@@ -115,6 +115,14 @@ class Brain:
                                         if (is_volume_turned_on == True):
                                             is_volume_turned_on, is_mode_active = False, False
                                             volume_controller.terminate()
+
+                                        if (is_mouse_turned_on == True):
+                                            is_mouse_turned_on, is_mode_active = False, False
+                                            mouse_controller.terminate()
+
+                                        if (is_keyboard_turned_on == True):
+                                            is_keyboard_turned_on, is_mode_active = False, False
+                                            keyboard_controller.terminate()
                                         self.speaker.say(
                                             "data/hibernating_system.mp3", "Hibernating now! Call me when you need me!")
                                         break
