@@ -53,6 +53,9 @@ _Start the server_
 ```bash
   python App.py
 ```
+
+_Read instructions ![here](https://github.com/pythonicforge/Peripheral-Killing-System/blob/v0.1.2/INSTRUCTIONS.md)_
+
 _*Note: Make sure to install `Python 3.8.5` and setup a `virtualenv` before running this project.*_
 
 
