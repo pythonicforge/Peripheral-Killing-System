@@ -1,4 +1,6 @@
 import multiprocessing as mp
+import os
+import platform
 import struct
 import sys
 import time
@@ -22,6 +24,15 @@ class Brain:
             return True
         except requests.ConnectionError:
             return False
+        
+    def clear_terminal(self):
+        PLATFORM = platform.system()
+        if PLATFORM == "Windows":
+            os.system('cls')
+        elif PLATFORM == "Linux" or PLATFORM == "Darwin":
+            os.system('clear')
+        
+        print(colored(f'PERIPHERAL KILLING SYSTEM [0.1.2 release]\nCurrent machine platform: {PLATFORM}\tCurrent mqchine time: {time.ctime()}', color="red"))
 
     def run(self) -> None:
         """
@@ -42,6 +53,7 @@ class Brain:
                 "data/no_internet.mp3", "No internet connection available! Please connect to the internet in order to run this software!")
             sys.exit()
         else:
+            self.clear_terminal()
             self.speaker.say("data/init/1.mp3", "Initializing system!")
 
             audioOBJ = Hear()
@@ -91,17 +103,10 @@ class Brain:
                                 if (response["transcription"] != None):
                                     query = query.lower().strip()
                                     print(
-                                        colored(f"User: {query}", color="blue"))
+                                        colored(f"User: {query}", color="yellow"))
 
                                     if "exit" in query or "stop"  in query:
                                         done = True
-                                        if (is_brightness_turned_on == True):
-                                            is_brightness_turned_on, is_mode_active = False, False
-                                            brightness_controller.terminate()
-
-                                        if (is_volume_turned_on == True):
-                                            is_volume_turned_on, is_mode_active = False, False
-                                            volume_controller.terminate()
 
                                         self.speaker.say("data/killSystem.mp3",
                                                          "Peripheral Killing System terminated. All systems are offline now!")
@@ -123,11 +128,14 @@ class Brain:
                                         if (is_keyboard_turned_on == True):
                                             is_keyboard_turned_on, is_mode_active = False, False
                                             keyboard_controller.terminate()
+                                        
+                                        self.clear_terminal()
                                         self.speaker.say(
                                             "data/hibernating_system.mp3", "Hibernating now! Call me when you need me!")
                                         break
 
                                     elif "turn on brightness mode" in query or "turn on brightness control mode" in query:
+                                        
                                         if (is_mode_active == False):
                                             if (is_brightness_turned_on == False):
                                                 is_brightness_turned_on, is_mode_active = True, True
@@ -137,9 +145,11 @@ class Brain:
                                             else:
                                                 self.speaker.say("data/brightness/brightness_already_on.mp3",
                                                                  "Brightness control mode is already turned on")
+                                        
                                         else:
                                             self.speaker.say("data/other_system_on.mp3",
                                                              "Some other instances of control system are currently running! Please turn them off and try again later!")
+                                        self.clear_terminal()
 
                                     elif "turn off brightness mode" in query or "turn off brightness control mode" in query:
                                         if (is_brightness_turned_on == True):
@@ -152,7 +162,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/brightness/no_brightness.mp3",
                                                              "No brightness control console is currently turned on. No actions taken!")
-
+                                        self.clear_terminal()
                                     elif "turn on volume mode" in query or "turn on volume control mode" in query:
                                         if (is_mode_active == False):
                                             if (is_volume_turned_on == False):
@@ -166,7 +176,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/other_system_on.mp3",
                                                              "Some other instances of control system are currently running! Please turn them off and try again later!")
-
+                                        self.clear_terminal()
                                     elif "turn off volume mode" in query or "turn off volume control mode" in query:
                                         if (is_volume_turned_on == True):
                                             is_volume_turned_on, is_mode_active = False, False
@@ -178,7 +188,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/volume/no_volume.mp3",
                                                              "No volume control console is currently turned on. No actions taken")
-
+                                        self.clear_terminal()
                                     elif "turn on mouse mode" in query or "turn on mouse control mode" in query:
                                         if (is_mode_active == False):
                                             if (is_mouse_turned_on == False):
@@ -192,7 +202,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/other_system_on.mp3",
                                                              "Some other instances of control system are currently running! Please turn them off and try again later!")
-
+                                        self.clear_terminal()
                                     elif "turn off mouse mode" in query or "turn off mouse control mode" in query:
                                         if (is_mouse_turned_on == True):
                                             is_mouse_turned_on, is_mode_active = False, False
@@ -204,6 +214,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/mouse/no_mouse.mp3",
                                                              "No mouse control console is currently turned on. No actions taken!")
+                                        self.clear_terminal()
                                     elif "turn on keyboard mode" in query or "turn on keyboard control mode" in query:
                                         if (is_mode_active == False):
                                             if (is_keyboard_turned_on == False):
@@ -217,7 +228,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/other_system_on.mp3",
                                                              "Some other instances of control system are currently running! Please turn them off and try again later!")
-
+                                        self.clear_terminal()
                                     elif "turn off keyboard mode" in query or "turn off keyboard control mode" in query:
                                         if (is_keyboard_turned_on == True):
                                             is_keyboard_turned_on, is_mode_active = False, False
@@ -229,6 +240,7 @@ class Brain:
                                         else:
                                             self.speaker.say("data/keyboard/no_keyboard.mp3",
                                                              "No keyboard control console is currently turned on. No actions taken!")
+                                        self.clear_terminal()
                                     else:
                                         pass
                                 elif query == None:
