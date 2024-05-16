@@ -6,7 +6,7 @@ Peripheral Killing System is a Python project designed to eliminate the use of m
 
 
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/heyyhxrdik/Peripheral-Killing-System/blob/v0.1.2/LICENSE)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/pythonicforge/Peripheral-Killing-System/blob/v0.1.2/LICENSE)
 
 
 
